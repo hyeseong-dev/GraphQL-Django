@@ -44,4 +44,36 @@ class Query(graphene.ObjectType):
         return Answer.objects.filter(question=id)
 
 
-schema = graphene.Schema(query=Query)
+# 카테고리 테이블의 데이터 생성
+# class CategoryMutation(graphene.Mutation):
+#     class Arguments:
+#         name = graphene.String(required=True)
+
+#     category = graphene.Field(CategoryType)
+
+#     @classmethod
+#     def mutate(cls, root, info, name):
+#         category = Category(name=name)
+#         category.save()
+#         return CategoryMutation(category=category)
+
+# 카테고리 테이블의 데이터 수정
+class CategoryMutation(graphene.Mutation):
+    class Arguments:
+        id = graphene.ID()
+
+    category = graphene.Field(CategoryType)
+
+    @classmethod
+    def mutate(cls, root, info, id):
+        category = Category.objects.get(id=id)
+        category.delete()
+        return CategoryMutation(category=category)
+
+
+class Mutation(graphene.ObjectType):
+
+    update_category = CategoryMutation.Field()
+
+
+schema = graphene.Schema(query=Query, mutation=Mutation)
